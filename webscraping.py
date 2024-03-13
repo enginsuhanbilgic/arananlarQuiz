@@ -7,6 +7,8 @@ from selenium.webdriver.support import expected_conditions as EC
 
 driver = webdriver.Chrome()
 
+orgSet = {"HİZBULLAH Terör Örgütü"}
+
 url = "https://www.terorarananlar.pol.tr/tarananlar"
 driver.get(url)
 data_list = []
@@ -27,8 +29,7 @@ wait = WebDriverWait(driver, 10)
 card_containers = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "deactivated-list-card")))
 for card in card_containers:
     # Extract information from each card
-    photo_url = \
-    card.find_element(By.CLASS_NAME, "deactivated-list-card-img").get_attribute("style").split("url(")[1].split(");")[
+    photo_url = card.find_element(By.CLASS_NAME, "deactivated-list-card-img").get_attribute("style").split("url(")[1].split(");")[
         0].strip("'")
 
     # Execute JavaScript to get the text content
@@ -40,14 +41,14 @@ for card in card_containers:
     organization = driver.execute_script(
         "return arguments[0].querySelector('.deactivated-list-card-content span:nth-of-type(2)').textContent;",
         card).strip() or "Organization not available"
-
+    orgSet.add(organization)
     card_data = {
         "Name": name,
         "Birth Information": birth_info,
         "Organization": organization,
         "Photo URL": photo_url
     }
-
+    print(orgSet)
     # Append the dictionary to the list
     data_list.append(card_data)
 

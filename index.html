@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Element Info</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Center the container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Adjust as needed */
+            font-family: Arial, sans-serif; /* Replace with your preferred font */
+        }
+        /* Style the buttons */
+        .button-container {
+            display: flex;
+            gap: 10px; /* Adjust spacing between buttons */
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #0074D9;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* Add hover effect to buttons */
+        .button:hover {
+            background-color: #0056b3;
+        }
+        /* Style the scoreboard */
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="scoreboard">Doğru: <span id="rightCount">0</span>, Yanlış: <span id="wrongCount">0</span></div>
+        <img id="randomImage" src="" alt="Random Image" width="150" height="150">
+        <p id="randomName"></p>
+        <div class="button-container" id="buttonContainer">
+            <!-- Buttons will be generated here -->
+        </div>
+    </div>
+
+    <script>
+        let rightCount = 0;
+        let wrongCount = 0;
+
+        // List of organization names
+        const organizationNames = [
+            "PKK/KCK Terör Örgütü",
+            "FETÖ/PDY Terör Örgütü",
+            "MLKP Terör Örgütü",
+            "MKP Terör Örgütü",
+            "DEAŞ Terör Örgütü",
+            "DHKP/C Terör Örgütü",
+            "HİZBULLAH Terör Örgütü",
+            "DEVRİMCİ KARARGAH Terör Örgütü",
+            "TKP-ML Konferans Terör Örgütü",
+            "THKP/C Terör Örgütü",
+            "TEVHİD-SELAM KUDÜS ORDUSU Terör Örgütü",
+            "DKP/BÖG Terör Örgütü"
+        ];
+
+        // Function to generate random buttons using the predefined organization names
+        function generateButtons(correctOrganization) {
+            const buttonContainer = document.getElementById('buttonContainer');
+            buttonContainer.innerHTML = ''; // Clear previous buttons
+            
+            // Create an array with 4 random organization names
+            const randomOrgs = [];
+            while (randomOrgs.length < 4) {
+                const randomOrg = organizationNames[Math.floor(Math.random() * organizationNames.length)];
+                if (!randomOrgs.includes(randomOrg) && randomOrg !== correctOrganization) {
+                    randomOrgs.push(randomOrg);
+                }
+            }
+            
+            // Add the correct organization to the array
+            randomOrgs.push(correctOrganization);
+
+            // Shuffle the organization names
+            randomOrgs.sort(() => Math.random() - 0.5);
+
+            // Create buttons for each selected organization name
+            randomOrgs.forEach(org => {
+                const button = document.createElement('button');
+                button.textContent = org;
+                button.className = 'button';
+                button.onclick = () => {
+                    if (org === correctOrganization) {
+                        rightCount++;
+                        document.getElementById('rightCount').textContent = rightCount;
+                        Swal.fire('Correct!', 'You selected the correct organization.', 'success').then(() => {
+							document.getElementById('randomImage').src = '';
+                            getRandomElementInfo();
+                        });
+                    } else {
+                        wrongCount++;
+                        document.getElementById('wrongCount').textContent = wrongCount;
+                        Swal.fire('Incorrect!', `Correct organization: ${correctOrganization}. Please try again.`, 'error').then(() => {
+                            document.getElementById('randomImage').src = '';
+							getRandomElementInfo();
+                        });
+                    }
+                };
+                buttonContainer.appendChild(button);
+            });
+        }
+
+        // Fetch random element info when the page loads
+        function getRandomElementInfo() {
+            fetch('https://raw.githubusercontent.com/enginsuhanbilgic/arananlarQuiz/main/output.json')
+                .then(response => response.json())
+                .then(data => {
+                    const randomIndex = Math.floor(Math.random() * data.length);
+                    const randomElement = data[randomIndex];
+                    const imageUrlWithoutQuotes = randomElement['Photo URL'].replace(/\"/g, ''); // Remove quotes from URL
+                    const randomImageUrl = 'https://www.terorarananlar.pol.tr' + imageUrlWithoutQuotes; // Construct complete image URL
+                    const randomName = randomElement['Name'];
+                    const correctOrganization = randomElement['Organization'];
+
+                    // Update HTML content
+                    document.getElementById('randomImage').src = randomImageUrl;
+                    document.getElementById('randomName').textContent = randomName;
+
+                    // Generate buttons
+                    generateButtons(correctOrganization);
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        // Fetch random element info when the page loads
+        getRandomElementInfo();
+    </script>
+</body>
+</html>
