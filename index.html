@@ -110,14 +110,14 @@
                     if (org === correctOrganization) {
                         rightCount++;
                         document.getElementById('rightCount').textContent = rightCount;
-                        Swal.fire('Correct!', 'You selected the correct organization.', 'success').then(() => {
+                        Swal.fire('Doğru!', 'Doğru cevap.', 'başarılı').then(() => {
 							document.getElementById('randomImage').src = '';
                             getRandomElementInfo();
                         });
                     } else {
                         wrongCount++;
                         document.getElementById('wrongCount').textContent = wrongCount;
-                        Swal.fire('Incorrect!', `Correct organization: ${correctOrganization}. Please try again.`, 'error').then(() => {
+                        Swal.fire('Yanlış!', `Correct organization: ${correctOrganization}. Bilemedin.`, 'hatalı').then(() => {
                             document.getElementById('randomImage').src = '';
 							getRandomElementInfo();
                         });
